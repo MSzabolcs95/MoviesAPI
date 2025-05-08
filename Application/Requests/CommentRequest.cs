@@ -10,5 +10,7 @@ namespace MoviesAPI.Application.Requests
 
         [Range(1, int.MaxValue)]
         public int MovieId { get; set; }
+
+        public string UserId { get; set; }
     }
 }

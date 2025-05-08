@@ -57,7 +57,7 @@ namespace MoviesAPI.Api.Controllers
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
 
-            return Ok(new { accessToken, refreshToken });
+            return Ok(new { accessToken, refreshToken, user.Id });
         }
 
         [HttpPost("refresh-token")]
@@ -77,7 +77,7 @@ namespace MoviesAPI.Api.Controllers
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
 
-            return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
+            return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken, userId = user.Id });
         }
 
         private string GenerateJwtToken(AppUser user)

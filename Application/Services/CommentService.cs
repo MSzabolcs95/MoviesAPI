@@ -22,6 +22,11 @@ namespace MoviesAPI.Application.Services
 
         public async Task<List<CommentDto>> GetAllCommentsForMovie(int movieId)
         {
+            if (movieId <= 0)
+            {
+                throw new ArgumentException("MovieId must be greater than 0.");
+            }
+
             return await _commentRepository.GetAllCommentsForMovie(movieId);
         }
 
@@ -34,22 +39,32 @@ namespace MoviesAPI.Application.Services
 
         public async Task<Comment> AddComment(CommentRequest comment)
         {
-            var CommentToSave = new Comment();
-            CommentToSave.CreatedAt = DateTime.UtcNow;
-
-            // Use IHttpContextAccessor to get the current user's ID
-            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrWhiteSpace(comment.Content))
             {
-                throw new InvalidOperationException("User is not authenticated.");
+                throw new ArgumentException("Comment content cannot be empty.");
             }
 
-            CommentToSave.UserId = userId;
-            CommentToSave.MovieId = comment.MovieId;
-            CommentToSave.Content = comment.Content;
+            if (comment.MovieId <= 0)
+            {
+                throw new ArgumentException("MovieId must be greater than 0.");
+            }
+
+            if (string.IsNullOrWhiteSpace(comment.UserId))
+            {
+                throw new ArgumentException("UserId cannot be null or empty.");
+            }
+
+            var CommentToSave = new Comment
+            {
+                CreatedAt = DateTime.UtcNow,
+                UserId = comment.UserId,
+                MovieId = comment.MovieId,
+                Content = comment.Content
+            };
 
             await _commentRepository.AddComment(CommentToSave);
             return CommentToSave;
         }
+
     }
 }
